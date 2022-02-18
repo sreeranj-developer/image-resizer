@@ -1,0 +1,78 @@
+#!/bin/bash
+usage="$(basename "$0") [-help] -- Documentation for image-resizer!
+
+how to use:
+
+    1)run (./resize --install) to install imagemagick
+    2)copy your images in a empty folder and select that folder
+    3)there will be some bug it will fix in next update"
+install="$(basename "$0") [-install] -- sudo apt install imagemagick!"   
+seed=42
+while getopts ':hs:' option; do
+  case "$option" in
+    h) echo "$usage"
+       exit;;
+    s) sudo apt install imagemagick
+       exit
+       ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+
+
+
+if ! which convert > /dev/null; then
+   echo "imagemagick is not installed!"
+   eco "run ./resizer -help"
+   sleep 1s;
+   exit
+fi
+echo "image-resizer.1.1.stable"
+echo "created by sreeranj"
+echo "##############################"
+sleep 2s;
+echo "starting-programme..."
+sleep 2s;
+FILE=`zenity --file-selection --directory --title="Choose the file having images"`
+case $? in
+         0)
+                echo "\"$FILE\" selected.";;
+         1)
+                echo "No file selected." 
+                exit;;
+        -1)
+                echo "An unexpected error has occurred."
+                exit;;
+esac
+echo "Enter-resolution!"
+sleep 1s;
+echo "width:"
+read a
+echo "height:"
+read b
+echo "convert-image-formate:"
+read e
+if [ -d "$PWD/output" ] 
+then
+    echo "Directory exists." 
+else
+    mkdir output
+fi
+cd output
+touch generated.txt
+echo "resized using image-resizer by sreeranj" >> generated.txt
+r=$RANDOM
+mkdir $r
+cd $r
+if [[ "$e" = "jpg" ]]; then
+    SCALE=`zenity --scale --text="compression value" --value="100" --min-value="0" --max-value="100" --step="100"`
+else
+    convert $FILE/* -resize $ax$b resized-0.$e
+    exit
+fi
+convert $FILE/* -resize $ax$b -quality $SCALE resized-0.$e
+sleep 2s
+echo "image-resized successfully!"
+cd
+$SHELL
